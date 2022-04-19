@@ -1,40 +1,29 @@
 
 var mysql = require("mysql");
 
-function createConnection() {
-	/*
-	
-	Creates a connection to the database.
-	Assumes there is a user with name 'root' and password 'password'
-	Assumes the database is called 'HOLDEM' (same as our init.sql file)
-	*/
-	return mysql.createConnection({
- 
-	   host: "localhost",
-	   user: "root",
-	   password: "password",
-	   database: "HOLDEM"
-	
-	});
- 
- }
 
-
-function cleanDatabase() {
+function query(text) {
 	/*
 
-	Cleans the database after each test.
+	Queries the database. Returns any rows that are retrieved from a SELECT statement.
 
 	*/
 
 	return new Promise((resolve, reject) => {
 
-		let connection = createConnection();
+		let connection = mysql.createConnection({
+ 
+			host: "localhost",
+			user: "root",
+			password: "password",
+			database: "HOLDEM"
+		 
+		});
 
 		connection.connect();
 
 		connection.query(
-			`CALL CLEAN ()`,
+			text,
 
 			function(error, results, fields) {
 
@@ -42,7 +31,7 @@ function cleanDatabase() {
 
 				if (error) return reject(error);
 
-				return resolve(true);
+				return resolve(results);
 
 			});
 
@@ -54,8 +43,8 @@ function cleanDatabase() {
 describe("database procedure tests", () => {
 
 	// before all tests and after each test clean the database
-	beforeAll(() => { return cleanDatabase(); });
-	afterEach(() => { return cleanDatabase(); });
+	beforeAll(() => { return query("CALL CLEAN ()"); });
+	afterEach(() => { return query("CALL CLEAN ()"); });
 
 	test("example test", () => {
 
