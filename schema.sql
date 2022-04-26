@@ -18,12 +18,7 @@ CREATE TABLE _USER (
 CREATE TABLE _TABLE (
 	
     TableId				INTEGER PRIMARY KEY NOT NULL UNIQUE,
-    SmallBlind			INTEGER NOT NULL CHECK(SmallBlind > 0),
-
-    -- Used to keep track of the table's state (implemented in the server logic
-    -- 0 = "WAITING" -> Table does not have enough players to start a new match
-    -- 1 = "MATCH" -> There is a poker match taking place
-    TableState          INTEGER NOT NULL CHECK(TableState = 0 OR TableState = 1)
+    SmallBlind			INTEGER NOT NULL CHECK(SmallBlind > 0)
 
 );
 
@@ -51,12 +46,6 @@ CREATE TABLE _MATCH (
 	MatchId				INTEGER PRIMARY KEY NOT NULL UNIQUE AUTO_INCREMENT,
     WinnerUsername		VARCHAR(255),
     TableId				INTEGER,
-
-    -- Used to keep track of match state (implemented in server logic)
-    -- 0 = "BEGINNING" -> Match is counting down to begin
-    -- 1 = "ROUND" -> Match is underway and progressing through rounds (see ROUND table)
-    -- 2 = "FINISHED" -> Match is finished
-    MatchState          INTEGER NOT NULL CHECK(MatchState >= 0 AND MatchState <= 2),
 
     -- Used for server logic
     -- When a new match is created, TMinus is set to a positive integer
