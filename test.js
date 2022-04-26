@@ -16,7 +16,8 @@ function query(text) {
 			host: "localhost",
 			user: "root",
 			password: "password",
-			database: "HOLDEM"
+			database: "HOLDEM",
+			multipleStatements: true
 		 
 		});
 
