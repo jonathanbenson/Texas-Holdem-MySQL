@@ -142,12 +142,6 @@ CREATE TABLE DECK_CARD (
 
 );
 
--- _Index tells the position of the card in the deck
--- and will have to be programatically set when the server boots up
-ALTER TABLE DECK_CARD
-ADD _Index INTEGER
-AFTER Suit;
-
 CREATE TABLE HAND (
     -- A HAND is the two cards a user has during a match
     
