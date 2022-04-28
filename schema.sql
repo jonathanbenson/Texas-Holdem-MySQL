@@ -234,3 +234,101 @@ CREATE TABLE HAND_TYPE_INSTANCE_CARD (
 
 );
 
+
+-- Below operations are populating the database
+
+-- Initialize the possible user actions in the database
+INSERT INTO PLAY_TYPE (PlayTypeName) VALUES ("CHECK");
+INSERT INTO PLAY_TYPE (PlayTypeName) VALUES ("FOLD");
+INSERT INTO PLAY_TYPE (PlayTypeName) VALUES ("RAISE");
+INSERT INTO PLAY_TYPE (PlayTypeName) VALUES ("CALL");
+INSERT INTO PLAY_TYPE (PlayTypeName) VALUES ("SMALL_BLIND");
+INSERT INTO PLAY_TYPE (PlayTypeName) VALUES ("BIG_BLIND");
+
+-- Initialize face values of cards
+INSERT INTO FACE (Val, _Name) VALUES (0, "2");
+INSERT INTO FACE (Val, _Name) VALUES (1, "3");
+INSERT INTO FACE (Val, _Name) VALUES (2, "4");
+INSERT INTO FACE (Val, _Name) VALUES (3, "5");
+INSERT INTO FACE (Val, _Name) VALUES (4, "6");
+INSERT INTO FACE (Val, _Name) VALUES (5, "7");
+INSERT INTO FACE (Val, _Name) VALUES (6, "8");
+INSERT INTO FACE (Val, _Name) VALUES (7, "9");
+INSERT INTO FACE (Val, _Name) VALUES (8, "10");
+INSERT INTO FACE (Val, _Name) VALUES (9, "JACK");
+INSERT INTO FACE (Val, _Name) VALUES (10, "QUEEN");
+INSERT INTO FACE (Val, _Name) VALUES (11, "KING");
+INSERT INTO FACE (Val, _Name) VALUES (12, "ACE");
+
+-- Initialize suit values for cards
+INSERT INTO SUIT (_Name) VALUES ("SPADES");
+INSERT INTO SUIT (_Name) VALUES ("CLUBS");
+INSERT INTO SUIT (_Name) VALUES ("DIAMONDS");
+INSERT INTO SUIT (_Name) VALUES ("HEARTS");
+
+-- Initialize all card types
+INSERT INTO CARD (Face, Suit)
+SELECT FACE._Name, SUIT._Name
+FROM FACE, SUIT;
+
+-- Source: https://www.cardplayer.com/rules-of-poker/hand-rankings
+-- Initialize all of the possible hand types
+INSERT INTO HAND_TYPE (_Rank, Degree, _Name) VALUES (1, 5, "ROYAL FLUSH");
+INSERT INTO HAND_TYPE (_Rank, Degree, _Name) VALUES (2, 5, "STRAIGHT FLUSH");
+INSERT INTO HAND_TYPE (_Rank, Degree, _Name) VALUES (3, 4, "FOUR OF A KIND");
+INSERT INTO HAND_TYPE (_Rank, Degree, _Name) VALUES (4, 5, "FULL HOUSE");
+INSERT INTO HAND_TYPE (_Rank, Degree, _Name) VALUES (5, 5, "FLUSH");
+INSERT INTO HAND_TYPE (_Rank, Degree, _Name) VALUES (6, 5, "STRAIGHT");
+INSERT INTO HAND_TYPE (_Rank, Degree, _Name) VALUES (7, 3, "THREE OF A KIND");
+INSERT INTO HAND_TYPE (_Rank, Degree, _Name) VALUES (8, 4, "TWO PAIR");
+INSERT INTO HAND_TYPE (_Rank, Degree, _Name) VALUES (9, 2, "PAIR");
+INSERT INTO HAND_TYPE (_Rank, Degree, _Name) VALUES (10, 1, "HIGH CARD");
+
+
+
+-- Initialize all possible hand type instances
+-- Example of initializing the instances of ROYAL FLUSH:
+
+INSERT INTO HAND_TYPE_INSTANCE (HandTypeRank) VALUES (1);
+
+SET @latestHandTypeInstanceId = (SELECT MAX(HandTypeInstanceId) FROM HAND_TYPE_INSTANCE);
+
+-- Royal flush of SPADES
+INSERT INTO HAND_TYPE_INSTANCE_CARD (HandTypeInstanceId, Face, Suit) VALUES (@latestHandTypeInstanceId, "10", "SPADES");
+INSERT INTO HAND_TYPE_INSTANCE_CARD (HandTypeInstanceId, Face, Suit) VALUES (@latestHandTypeInstanceId, "JACK", "SPADES");
+INSERT INTO HAND_TYPE_INSTANCE_CARD (HandTypeInstanceId, Face, Suit) VALUES (@latestHandTypeInstanceId, "QUEEN", "SPADES");
+INSERT INTO HAND_TYPE_INSTANCE_CARD (HandTypeInstanceId, Face, Suit) VALUES (@latestHandTypeInstanceId, "KING", "SPADES");
+INSERT INTO HAND_TYPE_INSTANCE_CARD (HandTypeInstanceId, Face, Suit) VALUES (@latestHandTypeInstanceId, "ACE", "SPADES");
+
+INSERT INTO HAND_TYPE_INSTANCE (HandTypeRank) VALUES (1);
+
+SET @latestHandTypeInstanceId = (SELECT MAX(HandTypeInstanceId) FROM HAND_TYPE_INSTANCE);
+
+-- Royal flush of CLUBS
+INSERT INTO HAND_TYPE_INSTANCE_CARD (HandTypeInstanceId, Face, Suit) VALUES (@latestHandTypeInstanceId, "10", "CLUBS");
+INSERT INTO HAND_TYPE_INSTANCE_CARD (HandTypeInstanceId, Face, Suit) VALUES (@latestHandTypeInstanceId, "JACK", "CLUBS");
+INSERT INTO HAND_TYPE_INSTANCE_CARD (HandTypeInstanceId, Face, Suit) VALUES (@latestHandTypeInstanceId, "QUEEN", "CLUBS");
+INSERT INTO HAND_TYPE_INSTANCE_CARD (HandTypeInstanceId, Face, Suit) VALUES (@latestHandTypeInstanceId, "KING", "CLUBS");
+INSERT INTO HAND_TYPE_INSTANCE_CARD (HandTypeInstanceId, Face, Suit) VALUES (@latestHandTypeInstanceId, "ACE", "CLUBS");
+
+INSERT INTO HAND_TYPE_INSTANCE (HandTypeRank) VALUES (1);
+
+SET @latestHandTypeInstanceId = (SELECT MAX(HandTypeInstanceId) FROM HAND_TYPE_INSTANCE);
+
+-- Royal flush of DIAMONDS
+INSERT INTO HAND_TYPE_INSTANCE_CARD (HandTypeInstanceId, Face, Suit) VALUES (@latestHandTypeInstanceId, "10", "DIAMONDS");
+INSERT INTO HAND_TYPE_INSTANCE_CARD (HandTypeInstanceId, Face, Suit) VALUES (@latestHandTypeInstanceId, "JACK", "DIAMONDS");
+INSERT INTO HAND_TYPE_INSTANCE_CARD (HandTypeInstanceId, Face, Suit) VALUES (@latestHandTypeInstanceId, "QUEEN", "DIAMONDS");
+INSERT INTO HAND_TYPE_INSTANCE_CARD (HandTypeInstanceId, Face, Suit) VALUES (@latestHandTypeInstanceId, "KING", "DIAMONDS");
+INSERT INTO HAND_TYPE_INSTANCE_CARD (HandTypeInstanceId, Face, Suit) VALUES (@latestHandTypeInstanceId, "ACE", "DIAMONDS");
+
+INSERT INTO HAND_TYPE_INSTANCE (HandTypeRank) VALUES (1);
+
+SET @latestHandTypeInstanceId = (SELECT MAX(HandTypeInstanceId) FROM HAND_TYPE_INSTANCE);
+
+-- Royal flush of HEARTS
+INSERT INTO HAND_TYPE_INSTANCE_CARD (HandTypeInstanceId, Face, Suit) VALUES (@latestHandTypeInstanceId, "10", "HEARTS");
+INSERT INTO HAND_TYPE_INSTANCE_CARD (HandTypeInstanceId, Face, Suit) VALUES (@latestHandTypeInstanceId, "JACK", "HEARTS");
+INSERT INTO HAND_TYPE_INSTANCE_CARD (HandTypeInstanceId, Face, Suit) VALUES (@latestHandTypeInstanceId, "QUEEN", "HEARTS");
+INSERT INTO HAND_TYPE_INSTANCE_CARD (HandTypeInstanceId, Face, Suit) VALUES (@latestHandTypeInstanceId, "KING", "HEARTS");
+INSERT INTO HAND_TYPE_INSTANCE_CARD (HandTypeInstanceId, Face, Suit) VALUES (@latestHandTypeInstanceId, "ACE", "HEARTS");
