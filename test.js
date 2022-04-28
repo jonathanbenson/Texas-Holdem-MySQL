@@ -80,7 +80,8 @@ describe("database procedure tests", () => {
 
 			SELECT SitterUsername as player
 			FROM SEAT
-			WHERE TableId=1;
+			WHERE TableId=1
+			ORDER BY SEAT._Index ASC;
 
 		`)).then(result => {
 			/*
@@ -114,7 +115,8 @@ describe("database procedure tests", () => {
 
 			SELECT SitterUsername as player
 			FROM SEAT
-			WHERE TableId=1;
+			WHERE TableId=1
+			ORDER BY SEAT._Index ASC;
 
 		`)).then(result => {
 			/*
@@ -147,7 +149,8 @@ describe("database procedure tests", () => {
 
 			SELECT SitterUsername as player
 			FROM SEAT
-			WHERE TableId=1;
+			WHERE TableId=1
+			ORDER BY SEAT._Index ASC;
 
 		`)).then(result => {
 			/*
@@ -181,7 +184,8 @@ describe("database procedure tests", () => {
 
 			SELECT SitterUsername as player
 			FROM SEAT
-			WHERE TableId=1;
+			WHERE TableId=1
+			ORDER BY SEAT._Index ASC;
 
 		`)).then(result => {
 			/*
