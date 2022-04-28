@@ -135,6 +135,7 @@ CREATE TABLE DECK_CARD (
 	TableId				INTEGER NOT NULL,
     Face				VARCHAR(30) NOT NULL,
     Suit				VARCHAR(30) NOT NULL,
+    _Index              INTEGER,
     
     FOREIGN KEY (TableId) REFERENCES _TABLE(TableId),
     FOREIGN KEY (Face, Suit) REFERENCES CARD(Face, Suit)
