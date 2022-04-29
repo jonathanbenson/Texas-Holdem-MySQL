@@ -213,6 +213,109 @@ describe("database procedure tests", () => {
 
 	});
 
+
+	test('NEW_TABLE stored procedure', () => {
+
+		return query(`
+
+			CALL NEW_TABLE(25);
+
+		`).then(() => query(`
+
+			SELECT TableId as id, SmallBlind as smallBlind FROM _TABLE;
+
+		`)).then(result => {
+			/*
+
+			Upon the creation of a new table, there should be a new record in the _TABLE table
+			with a small blind and table id.
+
+			*/
+
+			let table = result[0];
+
+			expect(table.id).toEqual(1);
+			expect(table.smallBlind).toEqual(25);
+
+		}).then(() => query(`
+
+			SELECT Face as face, Suit as suit, _Index as i
+			FROM DECK_CARD
+			WHERE TableId = 1
+			ORDER BY _Index;
+
+		`)).then(result => {
+			/*
+
+			There should also be 52 newly created records in the DECK_CARD table
+			that represents the deck of cards of that table.
+
+			Each deck card should have an index that tells its place in the deck.
+
+			*/
+
+			let expectedDeckCards = [
+				 { face: '2', suit: 'SPADES', i: 1 },
+				 { face: '2', suit: 'HEARTS', i: 2 },
+				 { face: '2', suit: 'DIAMONDS', i: 3 },
+				 { face: '2', suit: 'CLUBS', i: 4 },
+				 { face: '3', suit: 'SPADES', i: 5 },
+				 { face: '3', suit: 'HEARTS', i: 6 },
+				 { face: '3', suit: 'DIAMONDS', i: 7 },
+				 { face: '3', suit: 'CLUBS', i: 8 },
+				 { face: '4', suit: 'SPADES', i: 9 },
+				 { face: '4', suit: 'HEARTS', i: 10 },
+				 { face: '4', suit: 'DIAMONDS', i: 11 },
+				 { face: '4', suit: 'CLUBS', i: 12 },
+				 { face: '5', suit: 'SPADES', i: 13 },
+				 { face: '5', suit: 'HEARTS', i: 14 },
+				 { face: '5', suit: 'DIAMONDS', i: 15 },
+				 { face: '5', suit: 'CLUBS', i: 16 },
+				 { face: '6', suit: 'SPADES', i: 17 },
+				 { face: '6', suit: 'HEARTS', i: 18 },
+				 { face: '6', suit: 'DIAMONDS', i: 19 },
+				 { face: '6', suit: 'CLUBS', i: 20 },
+				 { face: '7', suit: 'SPADES', i: 21 },
+				 { face: '7', suit: 'HEARTS', i: 22 },
+				 { face: '7', suit: 'DIAMONDS', i: 23 },
+				 { face: '7', suit: 'CLUBS', i: 24 },
+				 { face: '8', suit: 'SPADES', i: 25 },
+				 { face: '8', suit: 'HEARTS', i: 26 },
+				 { face: '8', suit: 'DIAMONDS', i: 27 },
+				 { face: '8', suit: 'CLUBS', i: 28 },
+				 { face: '9', suit: 'SPADES', i: 29 },
+				 { face: '9', suit: 'HEARTS', i: 30 },
+				 { face: '9', suit: 'DIAMONDS', i: 31 },
+				 { face: '9', suit: 'CLUBS', i: 32 },
+				 { face: '10', suit: 'SPADES', i: 33 },
+				 { face: '10', suit: 'HEARTS', i: 34 },
+				 { face: '10', suit: 'DIAMONDS', i: 35 },
+				 { face: '10', suit: 'CLUBS', i: 36 },
+				 { face: 'JACK', suit: 'SPADES', i: 37 },
+				 { face: 'JACK', suit: 'HEARTS', i: 38 },
+				 { face: 'JACK', suit: 'DIAMONDS', i: 39 },
+				 { face: 'JACK', suit: 'CLUBS', i: 40 },
+				 { face: 'QUEEN', suit: 'SPADES', i: 41 },
+				 { face: 'QUEEN', suit: 'HEARTS', i: 42 },
+				 { face: 'QUEEN', suit: 'DIAMONDS', i: 43 },
+				 { face: 'QUEEN', suit: 'CLUBS', i: 44 },
+				 { face: 'KING', suit: 'SPADES', i: 45 },
+				 { face: 'KING', suit: 'HEARTS', i: 46 },
+				 { face: 'KING', suit: 'DIAMONDS', i: 47 },
+				 { face: 'KING', suit: 'CLUBS', i: 48 },
+				 { face: 'ACE', suit: 'SPADES', i: 49 },
+				 { face: 'ACE', suit: 'HEARTS', i: 50 },
+				 { face: 'ACE', suit: 'DIAMONDS', i: 51 },
+				 { face: 'ACE', suit: 'CLUBS', i: 52 }
+			  ];
+
+			expect(result).toEqual(expectedDeckCards);
+
+		});
+
+
+	});
+
 });
 
 
