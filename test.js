@@ -270,7 +270,6 @@ describe("database procedure tests", () => {
 
 			Procedure should return message of FAIL - USER IS NOT AT A TABLE.
 			*/
-			console.log(result)
 			let message = result[2][0].message;
 
 			expect(message).toEqual('FAIL - USER IS NOT AT A TABLE')
@@ -289,6 +288,46 @@ describe("database procedure tests", () => {
 			let message = result[2][0].message;
 
 			expect(message).toEqual('FAIL - USER NOT FOUND')
+		});
+	});
+
+	test("GET_EMPTY_TABLE_SEAT stored procedure", () => {
+
+		return query(`
+
+		INSERT INTO _USER (Username, Pass, Purse) VALUES ("jonathan", "password", 100);
+			
+		INSERT INTO _TABLE (SmallBlind) VALUES (25);
+		
+		INSERT INTO SEAT (TableId, _Index) VALUES (1, 0);
+		INSERT INTO SEAT (TableId, _Index) VALUES (1, 1);
+
+		`).then(() => query(`
+
+		SET @message = "hello";
+
+		CALL JOIN_TABLE("jonathan", 1, @message);
+
+		CALL GET_EMPTY_TABLE_SEAT(@message);
+		
+		SELECT @message as message;
+
+		SELECT * FROM seat;
+		SELECT * FROM seat WHERE SitterUsername IS NULL;
+		`)).then(result => {
+			/*
+			Let 1 player join the table.
+
+			Look for empty table.
+
+			Procedure should return message of 1.
+
+			Table should be empty.
+			*/
+			console.log(result)
+			let message = result[3][0].message;
+
+			expect(message).toEqual(1);
 		});
 	});
 });

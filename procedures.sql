@@ -204,4 +204,28 @@ BEGIN
     END IF;
 
 END $$
+
+DROP PROCEDURE IF EXISTS GET_EMPTY_TABLE_SEAT $$
+
+CREATE PROCEDURE GET_EMPTY_TABLE_SEAT (out tbl int)
+BEGIN
+
+    SET @tableId = NULL;
+
+    SELECT TableId INTO @tableId
+    FROM seat WHERE SitterUsername IS NULL;
+
+    IF(@tableId IS NULL)THEN
+    BEGIN
+        SELECT TableId INTO @tableId
+        FROM _TABLE ORDER BY TableId DESC;
+        SET tbl := @tableId + 1;
+    END;
+    ELSE
+    BEGIN
+        SET tbl := @tableId;
+    END;
+    END IF;
+
+END $$
 DELIMITER ;
