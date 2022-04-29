@@ -166,65 +166,42 @@ BEGIN
 END $$
 DELIMITER ;
 
+DELIMITER $$
+DROP PROCEDURE IF EXISTS LEAVE_TABLE $$
 
 
--- The NEW_TABLE procedure creates a new table and initializes its seats and deck of cards
-DROP PROCEDURE IF EXISTS NEW_TABLE;
-
-DELIMITER //
-
-CREATE PROCEDURE NEW_TABLE (IN smallBlind INT)
+CREATE PROCEDURE LEAVE_TABLE (In playerName varchar(255), out msg varchar(100))
 BEGIN
 
-    -- Variable used for the newly created table id
-    DECLARE newTableId INT DEFAULT 0;
+    SET @playerId = NULL;
+    SET @tableId = NULL;
 
-    -- Variables used for initializing the cards in the table's deck
-    DECLARE count INT DEFAULT 1;
-    DECLARE currentFace VARCHAR(30) DEFAULT "";
-    DECLARE currentSuit VARCHAR(30) DEFAULT "";
+    SELECT Username INTO @playerId from _USER WHERE Username=playerName;
 
-    -- Insert new table into database with given small blind
-    INSERT INTO _TABLE (SmallBlind) VALUES (smallBlind);
+    IF(@playerId IS NULL)THEN
+    BEGIN
+        SET msg='FAIL - USER NOT FOUND';
+    END;
+    ELSE
+    BEGIN
+        SELECT TableId INTO @tableId 
+        FROM SEAT 
+        WHERE SitterUsername=playerName;
 
-    -- Retrieve the table id of the newly created table
-    SELECT MAX(TableId) INTO newTableId
-    FROM _TABLE
-    GROUP BY TableId
-    LIMIT 1;
+        IF(@tableId IS NULL)THEN
+        BEGIN
+            SET msg='FAIL - USER IS NOT AT A TABLE';
+        END;
+        ELSE
+        BEGIN
+            UPDATE SEAT
+            SET SitterUsername = NULL
+            WHERE SitterUsername=playerName;
+            SET msg='SUCCESS';
+        END;
+        END IF;
+    END;
+    END IF;
 
-    -- Initialize the 10 seats for the new table
-    INSERT INTO SEAT (TableId, _Index) VALUES (newTableId, 0);
-    INSERT INTO SEAT (TableId, _Index) VALUES (newTableId, 1);
-    INSERT INTO SEAT (TableId, _Index) VALUES (newTableId, 2);
-    INSERT INTO SEAT (TableId, _Index) VALUES (newTableId, 3);
-    INSERT INTO SEAT (TableId, _Index) VALUES (newTableId, 4);
-    INSERT INTO SEAT (TableId, _Index) VALUES (newTableId, 5);
-    INSERT INTO SEAT (TableId, _Index) VALUES (newTableId, 6);
-    INSERT INTO SEAT (TableId, _Index) VALUES (newTableId, 7);
-    INSERT INTO SEAT (TableId, _Index) VALUES (newTableId, 8);
-    INSERT INTO SEAT (TableId, _Index) VALUES (newTableId, 9);
-
-    -- Initialize cards in the table's deck
-    WHILE count <= 52 DO
-
-        SELECT Face INTO currentFace
-        FROM CARD
-        WHERE Id = count
-        LIMIT 1;
-
-        SELECT Suit INTO currentSuit
-        FROM CARD
-        WHERE Id = count
-        LIMIT 1;
-
-        INSERT INTO DECK_CARD (TableId, Face, Suit, _Index)
-        VALUES (newTableId, currentFace, currentSuit, count);
-
-        SET count = count + 1;
-
-    END WHILE;
-
-END; //
-
+END $$
 DELIMITER ;
