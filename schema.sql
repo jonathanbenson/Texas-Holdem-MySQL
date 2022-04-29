@@ -120,19 +120,15 @@ CREATE TABLE CARD (
     -- A CARD is a unique card identifier in a standard deck of 52
     
     -- The id is used for initializing a table's deck
-    Id                  INTEGER PRIMARY KEY NOT NULL UNIQUE,
+    Id                  INTEGER NOT NULL UNIQUE AUTO_INCREMENT,
 	Face				VARCHAR(30) NOT NULL,
     Suit				VARCHAR(30) NOT NULL,
     
+    PRIMARY KEY (Face, Suit),
     FOREIGN KEY (Face) REFERENCES FACE(_Name),
     FOREIGN KEY (Suit) REFERENCES SUIT(_Name)
 
 );
-
--- Makes initializing a table's deck easier
--- See stored procedure NEW_TABLE
-ALTER TABLE CARD
-AUTO_INCREMENT = 0;
 
 CREATE TABLE DECK_CARD (
 

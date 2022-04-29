@@ -7,6 +7,9 @@ DELIMITER //
 CREATE PROCEDURE CLEAN ()
 BEGIN
 
+    SET FOREIGN_KEY_CHECKS = 0;
+
+    DELETE FROM DECK_CARD;
     DELETE FROM SEAT;
     DELETE FROM ROUND;
     DELETE FROM _MATCH;
@@ -24,6 +27,8 @@ BEGIN
 
     ALTER TABLE ROUND
     AUTO_INCREMENT = 1;
+
+    SET FOREIGN_KEY_CHECKS = 1;
 
 END; //
 
@@ -101,7 +106,7 @@ BEGIN
     DECLARE newTableId INT DEFAULT 0;
 
     -- Variables used for initializing the cards in the table's deck
-    DECLARE count INT DEFAULT 0;
+    DECLARE count INT DEFAULT 1;
     DECLARE currentFace VARCHAR(30) DEFAULT "";
     DECLARE currentSuit VARCHAR(30) DEFAULT "";
 
@@ -127,15 +132,17 @@ BEGIN
     INSERT INTO SEAT (TableId, _Index) VALUES (newTableId, 9);
 
     -- Initialize cards in the table's deck
-    WHILE count < 52 DO
+    WHILE count <= 52 DO
 
         SELECT Face INTO currentFace
         FROM CARD
-        WHERE Id = count;
+        WHERE Id = count
+        LIMIT 1;
 
         SELECT Suit INTO currentSuit
         FROM CARD
-        WHERE Id = count;
+        WHERE Id = count
+        LIMIT 1;
 
         INSERT INTO DECK_CARD (TableId, Face, Suit, _Index)
         VALUES (newTableId, currentFace, currentSuit, count);
