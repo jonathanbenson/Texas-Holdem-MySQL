@@ -34,9 +34,11 @@ END; //
 
 DELIMITER ;
 
+
+
 -- Insert the cards into the deck
 
-INSERT INTO DECK_CARD (Face, Suit) VALUES
+/* INSERT INTO DECK_CARD (Face, Suit) VALUES
 
 ('A', 'Clubs'),
 ('A', 'Diamonds'),
@@ -105,7 +107,7 @@ INSERT INTO DECK_CARD (Face, Suit) VALUES
 
 -- shuffles the deck
 
-SELECT * FROM DECK_CARD ORDER BY RANDOM()
+SELECT * FROM DECK_CARD ORDER BY RANDOM() */
 
 
 -- Procedure to place player at table, if not already at table, and table has atleast 1 empty seat
@@ -163,7 +165,6 @@ BEGIN
 
 END $$
 DELIMITER ;
-<<<<<<< HEAD
 
 
 
@@ -227,5 +228,3 @@ BEGIN
 END; //
 
 DELIMITER ;
-=======
->>>>>>> acab86a237927a479f4057440da5e3ace8bfe8ca
