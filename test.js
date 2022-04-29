@@ -311,6 +311,36 @@ describe("database procedure tests", () => {
 
 			expect(result).toEqual(expectedDeckCards);
 
+		}).then(() => query(`
+
+			SELECT SitterUsername as player, _Index as i
+			FROM SEAT
+			WHERE TableId=1;
+
+		`)).then(result => {
+			/*
+
+			There should also be 10 newly created empty seats for the
+			newly created table.
+
+			*/
+
+			let expectedSeats = [
+				 { player: null, i: 0 },
+				 { player: null, i: 1 },
+				 { player: null, i: 2 },
+				 { player: null, i: 3 },
+				 { player: null, i: 4 },
+				 { player: null, i: 5 },
+				 { player: null, i: 6 },
+				 { player: null, i: 7 },
+				 { player: null, i: 8 },
+				 { player: null, i: 9 }
+			  ];
+
+			expect(result).toEqual(expectedSeats);
+
+
 		});
 
 
