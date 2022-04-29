@@ -29,6 +29,78 @@ END; //
 
 DELIMITER ;
 
+-- Insert the cards into the deck
+
+INSERT INTO DECK_CARD (Face, Suit) VALUES
+
+('A', 'Clubs'),
+('A', 'Diamonds'),
+('A', 'Hearts'),
+('A', 'Spades'),
+
+('Two', 'Clubs'),
+('Two', 'Diamonds'),
+('Two', 'Hearts'),
+('Two', 'Spades'),
+
+('Three', 'Clubs'),
+('Three', 'Diamonds'),
+('Three', 'Hearts'),
+('Three', 'Spades'),
+
+('Four', 'Clubs'),
+('Four', 'Diamonds'),
+('Four', 'Hearts'),
+('Four', 'Spades'),
+
+('Five', 'Clubs'),
+('Five', 'Diamonds'),
+('Five', 'Hearts'),
+('Five', 'Spades'),
+
+('Six', 'Clubs'),
+('Six', 'Diamonds'),
+('Six', 'Hearts'),
+('Six', 'Spades'),
+
+('Seven', 'Clubs'),
+('Seven', 'Diamonds'),
+('Seven', 'Hearts'),
+('Seven', 'Spades'),
+
+('Eight', 'Clubs'),
+('Eight', 'Diamonds'),
+('Eight', 'Hearts'),
+('Eight', 'Spades'),
+
+('Nine', 'Clubs'),
+('Nine', 'Diamonds'),
+('Nine', 'Hearts'),
+('Nine', 'Spades'),
+
+('Ten', 'Clubs'),
+('Ten', 'Diamonds'),
+('Ten', 'Hearts'),
+('Ten', 'Spades'),
+
+('Jack', 'Clubs'),
+('Jack', 'Diamonds'),
+('Jack', 'Hearts'),
+('Jack', 'Spades'),
+
+('Queen', 'Clubs'),
+('Queen', 'Diamonds'),
+('Queen', 'Hearts'),
+('Queen', 'Spades'),
+
+('King', 'Clubs'),
+('King', 'Diamonds'),
+('King', 'Hearts'),
+('King', 'Spades')
+
+-- shuffles the deck
+
+SELECT * FROM DECK_CARD ORDER BY RANDOM()
 
 
 -- Procedure to place player at table, if not already at table, and table has atleast 1 empty seat
