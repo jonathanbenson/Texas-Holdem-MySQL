@@ -57,6 +57,9 @@ describe("database procedure tests", () => {
 		Insert 1 table.
 		Insert 2 EMPTY seats into that table.
 
+		*** We are only using a table with 2 seats in this test for convenience.
+		*** In the real thing, the NEW_TABLE procedure would be used to create a table with 10 seats.
+
 		*/
 
 		return query(`
@@ -251,6 +254,14 @@ describe("database procedure tests", () => {
 
 	test('NEW_TABLE stored procedure', () => {
 
+		/*
+
+		Setup test:
+
+		Create a new table.
+
+		*/
+
 		return query(`
 
 			CALL NEW_TABLE(25);
@@ -384,6 +395,14 @@ describe("database procedure tests", () => {
 
 
 	test("NEW_MATCH procedure", () => {
+		/*
+
+		Setup test:
+
+		Create 5 new users.
+		Create 1 new table.
+
+		*/
 
 		return query(`
 
