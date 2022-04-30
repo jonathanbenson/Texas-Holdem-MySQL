@@ -6,6 +6,11 @@ DELIMITER //
 
 CREATE PROCEDURE CLEAN ()
 BEGIN
+    /*
+
+    Cleans out the database in between each test.
+
+    */
 
     SET FOREIGN_KEY_CHECKS = 0;
 
@@ -110,13 +115,20 @@ DELIMITER ;
 SELECT * FROM DECK_CARD ORDER BY RANDOM() */
 
 
--- Procedure to place player at table, if not already at table, and table has atleast 1 empty seat
 DELIMITER $$
 DROP PROCEDURE IF EXISTS JOIN_TABLE $$
 
 
 CREATE PROCEDURE JOIN_TABLE (In playerName varchar(255), In pokerTable INT, OUT msg Varchar(100))
 BEGIN
+    /*
+
+    Sits a player at a table under the conditions that
+    1. the user exists in the database
+    2. there is available seats
+    3. the player is not already sitting at the table
+
+    */
 
     SET @playerId = NULL;
     SET @seatId = NULL;
@@ -179,13 +191,17 @@ DELIMITER ;
 
 
 
--- The NEW_TABLE procedure creates a new table and initializes its seats and deck of cards
 DROP PROCEDURE IF EXISTS NEW_TABLE;
 
 DELIMITER //
 
 CREATE PROCEDURE NEW_TABLE (IN smallBlind INT)
 BEGIN
+    /*
+
+    Creates a new table and initializes its seats and deck of cards
+
+    */
 
     -- Variable used for the newly created table id
     DECLARE newTableId INT DEFAULT 0;
@@ -248,17 +264,25 @@ DELIMITER //
 
 CREATE PROCEDURE NEW_MATCH (IN tableId INT, OUT msg VARCHAR(100))
 BEGIN
+    /*
+
+    Creates a new poker match at a given table.
+
+    */
 
     DECLARE numPlayers INT DEFAULT 0;
 
     DECLARE lastMatch INT DEFAULT NULL;
 
+    -- Find out how many players are sitting at the given table
     SELECT COUNT(SitterUsername) INTO numPlayers
     FROM SEAT
     GROUP BY TableId
     HAVING TableId = tableId
     LIMIT 1;
 
+    -- If there are less than 4 players sitting at the table
+    -- then we cannot begin a new match.
     SET msg = CASE
 		WHEN numPlayers < 4 THEN "FAIL - NOT ENOUGH PLAYERS"
         ELSE "SUCCESS"
@@ -267,12 +291,15 @@ BEGIN
     IF (msg = "SUCCESS") THEN
     BEGIN
 
+        -- Find out the most recent match (before the one being created)
         SELECT MatchId INTO lastMatch
         FROM _MATCH
         WHERE TableId = tableId AND MatchId IS NOT NULL
         ORDER BY MatchId DESC
         LIMIT 1;
 
+        -- Insert a new match into the database
+        -- with the most recent match as its last match
         INSERT INTO _MATCH (TableId, LastMatchId)
         VALUES (tableId, lastMatch);
 
