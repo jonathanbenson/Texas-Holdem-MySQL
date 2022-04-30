@@ -45,7 +45,7 @@ CREATE TABLE _MATCH (
 
 	MatchId				INTEGER PRIMARY KEY NOT NULL UNIQUE AUTO_INCREMENT,
     WinnerUsername		VARCHAR(255),
-    TableId				INTEGER,
+    TableId				INTEGER NOT NULL,
     
     -- The last match can be NULL (first match of the table)
     LastMatchId			INTEGER,

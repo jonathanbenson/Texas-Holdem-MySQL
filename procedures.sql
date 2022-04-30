@@ -251,6 +251,8 @@ BEGIN
 
     DECLARE numPlayers INT DEFAULT 0;
 
+    DECLARE lastMatch INT DEFAULT NULL;
+
     SELECT COUNT(SitterUsername) INTO numPlayers
     FROM SEAT
     GROUP BY TableId
@@ -261,6 +263,21 @@ BEGIN
 		WHEN numPlayers < 4 THEN "FAIL - NOT ENOUGH PLAYERS"
         ELSE "SUCCESS"
 	END;
+
+    IF (msg = "SUCCESS") THEN
+    BEGIN
+
+        SELECT MatchId INTO lastMatch
+        FROM _MATCH
+        WHERE TableId = tableId AND MatchId IS NOT NULL
+        ORDER BY MatchId DESC
+        LIMIT 1;
+
+        INSERT INTO _MATCH (TableId, LastMatchId)
+        VALUES (tableId, lastMatch);
+
+    END;
+    END IF;
 
 END; //
 

@@ -451,20 +451,71 @@ describe("database procedure tests", () => {
 
 			SELECT @message as message;
 
+			SELECT MatchId AS latestMatchId, LastMatchId AS lastMatchId
+			FROM _MATCH
+			WHERE TableId = 1
+			ORDER BY MatchId DESC
+			LIMIT 1;
+
 		`)).then(result => {
 			/*
 
-			Let 4 players sit at the table and try to create a new match.
+			Let 4 players sit at the table and then create the first match of the table.
 
 			A new match should be created since there are at least 4 players sitting at the table.
+			... the new match should have an id of 1, and a last match id of null (since it is the first one)
 
 			The procedure should return a message SUCCESS.
+			
 
 			*/
 
 			let message = result[7][0].message;
 
+			let latestMatchId = result[8][0].latestMatchId;
+			let lastMatchId = result[8][0].lastMatchId;
+
 			expect(message).toEqual('SUCCESS');
+
+			expect(latestMatchId).toEqual(1);
+			expect(lastMatchId).toBeNull();
+
+		}).then(() => query(`
+
+			SET @message = "hello";
+
+			CALL NEW_MATCH (1, @message);
+
+			SELECT @message AS message;
+
+			SELECT MatchId AS latestMatchId, LastMatchId AS lastMatchId
+			FROM _MATCH
+			WHERE TableId = 1
+			ORDER BY MatchId DESC
+			LIMIT 1;
+
+		`)).then(result => {
+
+			/*
+
+			Create a second match for the table.
+
+			This time we expect the new match's last match id to be 1 (instead of null)
+			because it is not the first match.
+
+			Its own match id will be 2 because it is the second match created.
+
+			*/
+
+			let message = result[2][0].message;
+
+			let latestMatchId = result[3][0].latestMatchId;
+			let lastMatchId = result[3][0].lastMatchId;
+
+			expect(message).toEqual('SUCCESS');
+
+			expect(latestMatchId).toEqual(2);
+			expect(lastMatchId).toEqual(1);
 
 		});
 
