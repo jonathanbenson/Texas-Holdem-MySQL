@@ -76,9 +76,9 @@ describe("database procedure tests", () => {
 
 			CALL JOIN_TABLE ("invalid username", 1, @message);
 			
-			SELECT @message as message;
+			SELECT @message AS message;
 
-			SELECT SitterUsername as player
+			SELECT SitterUsername AS player
 			FROM SEAT
 			WHERE TableId=1
 			ORDER BY SEAT._Index ASC;
@@ -111,9 +111,9 @@ describe("database procedure tests", () => {
 
 				CALL JOIN_TABLE ("jonathan", 1, @message);
 				
-				SELECT @message as message;
+				SELECT @message AS message;
 
-				SELECT SitterUsername as player
+				SELECT SitterUsername AS player
 				FROM SEAT
 				WHERE TableId=1
 				ORDER BY SEAT._Index ASC;
@@ -146,9 +146,9 @@ describe("database procedure tests", () => {
 
 			CALL JOIN_TABLE ("jonathan", 1, @message);
 			
-			SELECT @message as message;
+			SELECT @message AS message;
 
-			SELECT SitterUsername as player
+			SELECT SitterUsername AS player
 			FROM SEAT
 			WHERE TableId=1
 			ORDER BY SEAT._Index ASC;
@@ -180,9 +180,9 @@ describe("database procedure tests", () => {
 
 			CALL JOIN_TABLE ("kevin", 1, @message);
 			
-			SELECT @message as message;
+			SELECT @message AS message;
 
-			SELECT SitterUsername as player
+			SELECT SitterUsername AS player
 			FROM SEAT
 			WHERE TableId=1
 			ORDER BY SEAT._Index ASC;
@@ -215,9 +215,9 @@ describe("database procedure tests", () => {
 
 			CALL JOIN_TABLE ("joshua", 1, @message);
 			
-			SELECT @message as message;
+			SELECT @message AS message;
 
-			SELECT SitterUsername as player
+			SELECT SitterUsername AS player
 			FROM SEAT
 			WHERE TableId=1
 			ORDER BY SEAT._Index ASC;
@@ -257,7 +257,7 @@ describe("database procedure tests", () => {
 
 		`).then(() => query(`
 
-			SELECT TableId as id, SmallBlind as smallBlind FROM _TABLE;
+			SELECT TableId AS id, SmallBlind AS smallBlind FROM _TABLE;
 
 		`)).then(result => {
 			/*
@@ -348,7 +348,7 @@ describe("database procedure tests", () => {
 
 		}).then(() => query(`
 
-			SELECT SitterUsername as player, _Index as i
+			SELECT SitterUsername AS player, _Index as i
 			FROM SEAT
 			WHERE TableId=1;
 
@@ -378,6 +378,75 @@ describe("database procedure tests", () => {
 
 		});
 
+
+	});
+
+
+	test("NEW_MATCH procedure", () => {
+
+		return query(`
+
+			INSERT INTO _USER (Username, Pass, Purse) VALUES ("jonathan", "password", 100);
+			INSERT INTO _USER (Username, Pass, Purse) VALUES ("kevin", "password", 100);
+			INSERT INTO _USER (Username, Pass, Purse) VALUES ("joshua", "password", 100);
+			INSERT INTO _USER (Username, Pass, Purse) VALUES ("jacob", "password", 100);
+			INSERT INTO _USER (Username, Pass, Purse) VALUES ("thomas", "password", 100);
+			
+			CALL NEW_TABLE (25);
+
+		`).then(() => query(`
+
+			SET @message = "hello";
+
+			CALL NEW_MATCH (1, @message);
+
+			SELECT @message AS message;
+
+		`)).then(result => {
+			/*
+
+			Try to create a match when there are less than 4 players sitting at the table.
+
+			The procedure should return a message FAIL - NOT ENOUGH PLAYERS.
+
+			There should be no changes to the database.
+
+			*/
+
+			let message = result[2][0].message;
+
+			expect(message).toEqual('FAIL - NOT ENOUGH PLAYERS');
+
+		}).then(() => query(`
+
+			SET @message = "hello";
+
+			CALL JOIN_TABLE ("jonathan", 1, @message);
+			CALL JOIN_TABLE ("kevin", 1, @message);
+			CALL JOIN_TABLE ("joshua", 1, @message);
+			CALL JOIN_TABLE ("jacob", 1, @message);
+			CALL JOIN_TABLE ("thomas", 1, @message);
+
+			CALL NEW_MATCH (1, @message);
+
+			SELECT @message as message;
+
+		`)).then(result => {
+			/*
+
+			Let 4 players sit at the table and try to create a new match.
+
+			A new match should be created since there are at least 4 players sitting at the table.
+
+			The procedure should return a message SUCCESS.
+
+			*/
+
+			let message = result[7][0].message;
+
+			expect(message).toEqual('SUCCESS');
+
+		});
 
 	});
 

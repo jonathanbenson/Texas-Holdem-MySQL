@@ -239,3 +239,29 @@ BEGIN
 END; //
 
 DELIMITER ;
+
+
+-- The NEW_MATCH creates a new match
+DROP PROCEDURE IF EXISTS NEW_MATCH;
+
+DELIMITER //
+
+CREATE PROCEDURE NEW_MATCH (IN tableId INT, OUT msg VARCHAR(100))
+BEGIN
+
+    DECLARE numPlayers INT DEFAULT 0;
+
+    SELECT COUNT(SitterUsername) INTO numPlayers
+    FROM SEAT
+    GROUP BY TableId
+    HAVING TableId = tableId
+    LIMIT 1;
+
+    SET msg = CASE
+		WHEN numPlayers < 4 THEN "FAIL - NOT ENOUGH PLAYERS"
+        ELSE "SUCCESS"
+	END;
+
+END; //
+
+DELIMITER ;
