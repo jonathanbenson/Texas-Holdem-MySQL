@@ -127,6 +127,7 @@ BEGIN
     1. the user exists in the database
     2. there is available seats
     3. the player is not already sitting at the table
+    4. the player has enough chips in their purse to afford the buy-in of the table
 
     */
 
