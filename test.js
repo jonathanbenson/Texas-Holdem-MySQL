@@ -74,7 +74,7 @@ describe("database procedure tests", () => {
 
 			SET @message = "hello";
 
-			CALL JOIN_TABLE ("jonathan", 1, @message);
+			CALL JOIN_TABLE ("invalid username", 1, @message);
 			
 			SELECT @message as message;
 
@@ -82,6 +82,41 @@ describe("database procedure tests", () => {
 			FROM SEAT
 			WHERE TableId=1
 			ORDER BY SEAT._Index ASC;
+
+		`)).then(result => {
+			/*
+
+			Let 1 player with an invalid username try to join the table.
+
+			The procedure should return a message FAIL - USER NOT FOUND.
+
+			There should be no changes to the database.
+
+			*/
+
+			let message = result[2][0].message;
+
+			expect(message).toEqual('FAIL - USER NOT FOUND');
+
+
+			let player1 = result[3][0].player;
+			let player2 = result[3][1].player;
+
+			expect(player1).toBeNull();
+			expect(player2).toBeNull();
+
+		}).then(() => query(`
+
+				SET @message = "hello";
+
+				CALL JOIN_TABLE ("jonathan", 1, @message);
+				
+				SELECT @message as message;
+
+				SELECT SitterUsername as player
+				FROM SEAT
+				WHERE TableId=1
+				ORDER BY SEAT._Index ASC;
 
 		`)).then(result => {
 			/*

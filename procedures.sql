@@ -123,44 +123,55 @@ BEGIN
 
     #fetch playerId of that player from player table using player name or 
     #else store player name directly into the pokerTable so direct check that player present in that table or not
-    SELECT Username INTO @playerId FROM _USER WHERE Username=playerName;
-    
-    #check that player present in that table or not
-    SELECT _Index INTO @seatId
-    FROM SEAT
-    INNER JOIN _TABLE ON _TABLE.TableId=pokerTable
-    WHERE SEAT.SitterUsername=@playerId
-    LIMIT 1;
-    
-    #if seat id is null it means that player have no seat in that table, then check is there any seats empty
-    if(@seatId IS NULL)THEN
+    SELECT Username INTO @playerId
+    FROM _USER
+    WHERE Username=playerName;
+
+    IF(@playerId IS NULL)THEN
+    BEGIN
+        SET msg='FAIL - USER NOT FOUND';
+    END;
+    ELSE
     BEGIN
 
+        #check that player present in that table or not
         SELECT _Index INTO @seatId
         FROM SEAT
         INNER JOIN _TABLE ON _TABLE.TableId=pokerTable
-        WHERE SEAT.SitterUsername IS NULL
+        WHERE SEAT.SitterUsername=@playerId
         LIMIT 1;
-
-        #if seat id is not null it means empty seat is present then give that seat to that player
-        if(@seatId IS NOT NULL)THEN
+        
+        #if seat id is null it means that player have no seat in that table, then check is there any seats empty
+        IF(@seatId IS NULL)THEN
         BEGIN
-            UPDATE SEAT
-            SET SitterUsername=@playerId
-            WHERE _Index=@seatId AND TableId=pokerTable;
 
-            SET msg='SUCCESS';
+            SELECT _Index INTO @seatId
+            FROM SEAT
+            INNER JOIN _TABLE ON _TABLE.TableId=pokerTable
+            WHERE SEAT.SitterUsername IS NULL
+            LIMIT 1;
+
+            #if seat id is not null it means empty seat is present then give that seat to that player
+            if(@seatId IS NOT NULL)THEN
+            BEGIN
+                UPDATE SEAT
+                SET SitterUsername=@playerId
+                WHERE _Index=@seatId AND TableId=pokerTable;
+
+                SET msg='SUCCESS';
+            END;
+            ELSE
+            BEGIN
+            SET msg='FAIL - NO EMPTY SEATS';
+            END;
+            END IF;
         END;
-        ELSE
+        ELSE 
         BEGIN
-           SET msg='FAIL - NO EMPTY SEATS';
-        END;
+            SET msg='FAIL - PLAYER ALREADY AT TABLE';
+        END  ; 
         END IF;
     END;
-    ELSE 
-    BEGIN
-        SET msg='FAIL - PLAYER ALREADY AT TABLE';
-    END  ; 
     END IF;
 
 END $$
