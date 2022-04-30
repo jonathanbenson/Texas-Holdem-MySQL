@@ -53,7 +53,7 @@ describe("database procedure tests", () => {
 
 		Setup test:
 
-		Insert 3 players.
+		Insert 4 players. 1 has #chips in their purse below the buy-in of the table (buy-in is x4 the small blind).
 		Insert 1 table.
 		Insert 2 EMPTY seats into that table.
 
@@ -64,9 +64,11 @@ describe("database procedure tests", () => {
 
 		return query(`
 
-			INSERT INTO _USER (Username, Pass, Purse) VALUES ("jonathan", "password", 100);
-			INSERT INTO _USER (Username, Pass, Purse) VALUES ("kevin", "password", 100);
-			INSERT INTO _USER (Username, Pass, Purse) VALUES ("joshua", "password", 100);
+			INSERT INTO _USER (Username, Pass, Purse) VALUES ("jonathan", "password", 150);
+			INSERT INTO _USER (Username, Pass, Purse) VALUES ("kevin", "password", 150);
+			INSERT INTO _USER (Username, Pass, Purse) VALUES ("joshua", "password", 150);
+
+			INSERT INTO _USER (Username, Pass, Purse) VALUES ("rainman", "password", 25);		
 			
 			INSERT INTO _TABLE (SmallBlind) VALUES (25);
 			
@@ -100,6 +102,41 @@ describe("database procedure tests", () => {
 			let message = result[2][0].message;
 
 			expect(message).toEqual('FAIL - USER NOT FOUND');
+
+
+			let player1 = result[3][0].player;
+			let player2 = result[3][1].player;
+
+			expect(player1).toBeNull();
+			expect(player2).toBeNull();
+
+		}).then(() => query(`
+
+			SET @message = "hello";
+
+			CALL JOIN_TABLE ("rainman", 1, @message);
+			
+			SELECT @message AS message;
+
+			SELECT SitterUsername AS player
+			FROM SEAT
+			WHERE TableId=1
+			ORDER BY SEAT._Index ASC;
+
+		`)).then(result => {
+			/*
+
+			Let 1 player with an insufficient amount of chips in their purse try an join the table.
+
+			The procedure should return a message FAIL - NOT ENOUGH FUNDS.
+
+			There should be no changes to the database.
+
+			*/
+
+			let message = result[2][0].message;
+
+			expect(message).toEqual('FAIL - NOT ENOUGH FUNDS');
 
 
 			let player1 = result[3][0].player;

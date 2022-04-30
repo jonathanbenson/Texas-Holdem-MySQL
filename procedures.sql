@@ -132,6 +132,8 @@ BEGIN
 
     SET @playerId = NULL;
     SET @seatId = NULL;
+    SET @smallBlind = NULL;
+    SET @purse = NULL;
 
     #fetch playerId of that player from player table using player name or 
     #else store player name directly into the pokerTable so direct check that player present in that table or not
@@ -146,42 +148,63 @@ BEGIN
     ELSE
     BEGIN
 
-        #check that player present in that table or not
-        SELECT _Index INTO @seatId
-        FROM SEAT
-        INNER JOIN _TABLE ON _TABLE.TableId=pokerTable
-        WHERE SEAT.SitterUsername=@playerId
-        LIMIT 1;
-        
-        #if seat id is null it means that player have no seat in that table, then check is there any seats empty
-        IF(@seatId IS NULL)THEN
+        -- Find out the small blind of the given table - used to calculate the buy-in
+        SELECT SmallBlind INTO @smallBlind
+        FROM _TABLE
+        WHERE TableId = pokerTable;
+
+        -- Find out the # chips the user has in their purse
+        SELECT Purse INTO @purse
+        FROM _USER
+        WHERE Username = @playerId;
+
+        -- If the user has less chips in their purse than the amount of the buy-in (x4 the small blind)
+        -- then they cannot sit at the table
+        IF (@purse < (@smallBlind * 4)) THEN
+        BEGIN
+            SET msg = 'FAIL - NOT ENOUGH FUNDS';
+        END;
+        ELSE
         BEGIN
 
+            #check that player present in that table or not
             SELECT _Index INTO @seatId
             FROM SEAT
             INNER JOIN _TABLE ON _TABLE.TableId=pokerTable
-            WHERE SEAT.SitterUsername IS NULL
+            WHERE SEAT.SitterUsername=@playerId
             LIMIT 1;
-
-            #if seat id is not null it means empty seat is present then give that seat to that player
-            if(@seatId IS NOT NULL)THEN
+            
+            #if seat id is null it means that player have no seat in that table, then check is there any seats empty
+            IF(@seatId IS NULL)THEN
             BEGIN
-                UPDATE SEAT
-                SET SitterUsername=@playerId
-                WHERE _Index=@seatId AND TableId=pokerTable;
 
-                SET msg='SUCCESS';
+                SELECT _Index INTO @seatId
+                FROM SEAT
+                INNER JOIN _TABLE ON _TABLE.TableId=pokerTable
+                WHERE SEAT.SitterUsername IS NULL
+                LIMIT 1;
+
+                #if seat id is not null it means empty seat is present then give that seat to that player
+                IF(@seatId IS NOT NULL)THEN
+                BEGIN
+                    UPDATE SEAT
+                    SET SitterUsername=@playerId
+                    WHERE _Index=@seatId AND TableId=pokerTable;
+
+                    SET msg='SUCCESS';
+                END;
+                ELSE
+                BEGIN
+                SET msg='FAIL - NO EMPTY SEATS';
+                END;
+                END IF;
             END;
-            ELSE
+            ELSE 
             BEGIN
-            SET msg='FAIL - NO EMPTY SEATS';
-            END;
+                SET msg='FAIL - PLAYER ALREADY AT TABLE';
+            END  ; 
             END IF;
         END;
-        ELSE 
-        BEGIN
-            SET msg='FAIL - PLAYER ALREADY AT TABLE';
-        END  ; 
         END IF;
     END;
     END IF;
