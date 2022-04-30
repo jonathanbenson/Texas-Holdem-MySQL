@@ -350,7 +350,8 @@ describe("database procedure tests", () => {
 
 			SELECT SitterUsername AS player, _Index as i
 			FROM SEAT
-			WHERE TableId=1;
+			WHERE TableId=1
+			ORDER BY _Index ASC;
 
 		`)).then(result => {
 			/*
