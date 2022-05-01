@@ -45,12 +45,7 @@ CREATE TABLE _MATCH (
 
 	MatchId				INTEGER PRIMARY KEY NOT NULL UNIQUE AUTO_INCREMENT,
     WinnerUsername		VARCHAR(255),
-    TableId				INTEGER,
-
-    -- Used for server logic
-    -- When a new match is created, TMinus is set to a positive integer
-    -- ... and a countdown begins to start and initializes the match (insert the first round with blind bets)
-    TMinus              INTEGER NOT NULL CHECK(TMinus >= 0),
+    TableId				INTEGER NOT NULL,
     
     -- The last match can be NULL (first match of the table)
     LastMatchId			INTEGER,
