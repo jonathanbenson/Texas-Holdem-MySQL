@@ -287,6 +287,124 @@ describe("database procedure tests", () => {
 		});
 
 	});
+  
+  test("LEAVE_TABLE stored procedure", () => {
+
+		return query(`
+
+		INSERT INTO _USER (Username, Pass, Purse) VALUES ("jonathan", "password", 100);
+			
+		INSERT INTO _TABLE (SmallBlind) VALUES (25);
+		
+		INSERT INTO SEAT (TableId, _Index) VALUES (1, 0);
+		INSERT INTO SEAT (TableId, _Index) VALUES (1, 1);
+
+		`).then(() => query(`
+
+		SET @message = "hello";
+
+		CALL JOIN_TABLE ("jonathan", 1, @message);
+
+		CALL LEAVE_TABLE ("jonathan", @message);
+		
+		SELECT @message as message;
+
+		SELECT SitterUsername as player
+		FROM SEAT
+		WHERE TableId=1;
+
+		`)).then(result => {
+			/*
+			Let 1 player join the table.
+
+			Remove that player.
+
+			Procedure should return message of SUCCESS.
+
+			Table should be empty.
+			*/
+			let message = result[3][0].message;
+
+			expect(message).toEqual('SUCCESS');
+
+			let player1 = result[4][0].player;
+			let player2 = result[4][1].player;
+
+			expect(player1).toEqual(null);
+			expect(player2).toEqual(null);
+
+		}).then(() => query(`
+		SET @message = "hello";
+
+		CALL LEAVE_TABLE("jonathan", @message);
+
+		SELECT @message as message;
+		`).then(result => {
+			/*
+			Try to remove a player that is not at a table.
+
+			Procedure should return message of FAIL - USER IS NOT AT A TABLE.
+			*/
+			let message = result[2][0].message;
+
+			expect(message).toEqual('FAIL - USER IS NOT AT A TABLE')
+		})).then(() => query(`
+		SET @message = "hello";
+
+		CALL LEAVE_TABLE("toby", @message);
+
+		SELECT @message as message;
+		`)).then(result => {
+			/*
+			Try to remove a player that does not exist.
+
+			Procedure should return message of FAIL - USER NOT FOUND.
+			*/
+			let message = result[2][0].message;
+
+			expect(message).toEqual('FAIL - USER NOT FOUND')
+		});
+	});
+
+	test("GET_EMPTY_TABLE_SEAT stored procedure", () => {
+
+		return query(`
+
+		INSERT INTO _USER (Username, Pass, Purse) VALUES ("jonathan", "password", 100);
+			
+		INSERT INTO _TABLE (SmallBlind) VALUES (25);
+		
+		INSERT INTO SEAT (TableId, _Index) VALUES (1, 0);
+		INSERT INTO SEAT (TableId, _Index) VALUES (1, 1);
+
+		`).then(() => query(`
+
+		SET @message = "hello";
+
+		CALL JOIN_TABLE("jonathan", 1, @message);
+
+		CALL GET_EMPTY_TABLE_SEAT(@message);
+		
+		SELECT @message as message;
+
+		SELECT * FROM seat;
+		SELECT * FROM seat WHERE SitterUsername IS NULL;
+		`)).then(result => {
+			/*
+			Let 1 player join the table.
+
+			Look for empty table.
+
+			Procedure should return message of 1.
+
+			Table should be empty.
+			*/
+			console.log(result)
+			let message = result[3][0].message;
+
+			expect(message).toEqual(1);
+		});
+	});
 
 
 	test('NEW_TABLE stored procedure', () => {
