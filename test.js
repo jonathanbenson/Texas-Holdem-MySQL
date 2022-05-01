@@ -387,8 +387,8 @@ describe("database procedure tests", () => {
 		
 		SELECT @message as message;
 
-		SELECT * FROM seat;
-		SELECT * FROM seat WHERE SitterUsername IS NULL;
+		SELECT * FROM SEAT;
+		SELECT * FROM SEAT WHERE SitterUsername IS NULL;
 		`)).then(result => {
 			/*
 			Let 1 player join the table.
@@ -399,7 +399,7 @@ describe("database procedure tests", () => {
 
 			Table should be empty.
 			*/
-			console.log(result)
+
 			let message = result[3][0].message;
 
 			expect(message).toEqual(1);
@@ -549,7 +549,7 @@ describe("database procedure tests", () => {
 	});
 
 
-	test("NEW_MATCH procedure", () => {
+	test("NEW_MATCH stored procedure", () => {
 		/*
 
 		Setup test:

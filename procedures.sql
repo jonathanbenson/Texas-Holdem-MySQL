@@ -2,7 +2,7 @@
 
 DROP PROCEDURE IF EXISTS CLEAN;
 
-DELIMITER //
+DELIMITER $$
 
 CREATE PROCEDURE CLEAN ()
 BEGIN
@@ -35,9 +35,7 @@ BEGIN
 
     SET FOREIGN_KEY_CHECKS = 1;
 
-END; //
-
-DELIMITER ;
+END $$
 
 
 
@@ -115,7 +113,6 @@ DELIMITER ;
 SELECT * FROM DECK_CARD ORDER BY RANDOM() */
 
 
-DELIMITER $$
 DROP PROCEDURE IF EXISTS JOIN_TABLE $$
 
 
@@ -211,11 +208,9 @@ BEGIN
     END IF;
 
 END $$
-DELIMITER ;
 
-DELIMITER $$
+
 DROP PROCEDURE IF EXISTS LEAVE_TABLE $$
-
 
 
 CREATE PROCEDURE LEAVE_TABLE (In playerName varchar(255), out msg varchar(100))
@@ -253,12 +248,7 @@ BEGIN
 
 END $$
 
-
-
-
-DROP PROCEDURE IF EXISTS NEW_TABLE;
-
-DELIMITER //
+DROP PROCEDURE IF EXISTS NEW_TABLE $$
 
 CREATE PROCEDURE NEW_TABLE (IN smallBlind INT)
 BEGIN
@@ -268,35 +258,54 @@ BEGIN
 
     */
 
-    SET @playerId = NULL;
-    SET @tableId = NULL;
+    -- Variable used for the newly created table id
+    DECLARE newTableId INT DEFAULT 0;
 
-    SELECT Username INTO @playerId from _USER WHERE Username=playerName;
+    -- Variables used for initializing the cards in the table's deck
+    DECLARE count INT DEFAULT 1;
+    DECLARE currentFace VARCHAR(30) DEFAULT "";
+    DECLARE currentSuit VARCHAR(30) DEFAULT "";
 
-    IF(@playerId IS NULL)THEN
-    BEGIN
-        SET msg='FAIL - USER NOT FOUND';
-    END;
-    ELSE
-    BEGIN
-        SELECT TableId INTO @tableId 
-        FROM SEAT 
-        WHERE SitterUsername=playerName;
+    -- Insert new table into database with given small blind
+    INSERT INTO _TABLE (SmallBlind) VALUES (smallBlind);
 
-        IF(@tableId IS NULL)THEN
-        BEGIN
-            SET msg='FAIL - USER IS NOT AT A TABLE';
-        END;
-        ELSE
-        BEGIN
-            UPDATE SEAT
-            SET SitterUsername = NULL
-            WHERE SitterUsername=playerName;
-            SET msg='SUCCESS';
-        END;
-        END IF;
-    END;
-    END IF;
+    -- Retrieve the table id of the newly created table
+    SELECT MAX(TableId) INTO newTableId
+    FROM _TABLE
+    GROUP BY TableId
+    LIMIT 1;
+
+    -- Initialize the 10 seats for the new table
+    INSERT INTO SEAT (TableId, _Index) VALUES (newTableId, 0);
+    INSERT INTO SEAT (TableId, _Index) VALUES (newTableId, 1);
+    INSERT INTO SEAT (TableId, _Index) VALUES (newTableId, 2);
+    INSERT INTO SEAT (TableId, _Index) VALUES (newTableId, 3);
+    INSERT INTO SEAT (TableId, _Index) VALUES (newTableId, 4);
+    INSERT INTO SEAT (TableId, _Index) VALUES (newTableId, 5);
+    INSERT INTO SEAT (TableId, _Index) VALUES (newTableId, 6);
+    INSERT INTO SEAT (TableId, _Index) VALUES (newTableId, 7);
+    INSERT INTO SEAT (TableId, _Index) VALUES (newTableId, 8);
+    INSERT INTO SEAT (TableId, _Index) VALUES (newTableId, 9);
+
+    -- Initialize cards in the table's deck
+    WHILE count <= 52 DO
+
+        SELECT Face INTO currentFace
+        FROM CARD
+        WHERE Id = count
+        LIMIT 1;
+
+        SELECT Suit INTO currentSuit
+        FROM CARD
+        WHERE Id = count
+        LIMIT 1;
+
+        INSERT INTO DECK_CARD (TableId, Face, Suit, _Index)
+        VALUES (newTableId, currentFace, currentSuit, count);
+
+        SET count = count + 1;
+
+    END WHILE;
 
 END $$
 
@@ -308,7 +317,7 @@ BEGIN
     SET @tableId = NULL;
 
     SELECT TableId INTO @tableId
-    FROM seat WHERE SitterUsername IS NULL;
+    FROM SEAT WHERE SitterUsername IS NULL;
 
     IF(@tableId IS NULL)THEN
     BEGIN
@@ -323,13 +332,9 @@ BEGIN
     END IF;
 
 END $$
-DELIMITER ;
-
 
 -- The NEW_MATCH creates a new match
-DROP PROCEDURE IF EXISTS NEW_MATCH;
-
-DELIMITER //
+DROP PROCEDURE IF EXISTS NEW_MATCH $$
 
 CREATE PROCEDURE NEW_MATCH (IN tableId INT, OUT msg VARCHAR(100))
 BEGIN
@@ -375,6 +380,6 @@ BEGIN
     END;
     END IF;
 
-END; //
+END $$
 
 DELIMITER ;
