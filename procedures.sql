@@ -382,4 +382,67 @@ BEGIN
 
 END $$
 
+
+
+-- The NEW_MATCH creates a new match
+DROP PROCEDURE IF EXISTS SHUFFLE_DECK $$
+
+CREATE PROCEDURE SHUFFLE_DECK (IN tableId INT)
+BEGIN
+    /*
+
+    Shuffles a table's deck of cards.
+
+    */
+
+    DECLARE numShuffles INT DEFAULT 0;
+
+    DECLARE indexA INT DEFAULT NULL;
+    DECLARE faceA VARCHAR(30) DEFAULT "ACE";
+    DECLARE suitA VARCHAR(30) DEFAULT "SPADES";
+
+    DECLARE indexB INT DEFAULT NULL;
+    DECLARE faceB VARCHAR(30) DEFAULT "2";
+    DECLARE suitB VARCHAR(30) DEFAULT "CLUBS";
+
+    -- Swap two cards' indices in the deck 104 times (two times length of deck)
+    WHILE numShuffles < 104 DO
+
+        -- Retrieve the current indices of the two cards we want to swap
+        SELECT _Index INTO indexA
+        FROM DECK_CARD
+        WHERE TableId = tableId AND Face = faceA AND Suit = suitA;
+
+        SELECT _Index INTO indexB
+        FROM DECK_CARD
+        WHERE TableId = tableId AND Face = faceB AND Suit = suitB;
+
+        -- Swap the two cards' indices
+        UPDATE DECK_CARD
+        SET _Index = indexA
+        WHERE TableId = tableId AND Face = faceB AND Suit = suitB;
+
+        UPDATE DECK_CARD
+        SET _Index = indexB
+        WHERE TableId = tableId AND Face = faceA AND Suit = suitA;
+
+        -- Generate two random cards' face and suit to swap next
+        -- ...using indexA and indexB variables for convenience here
+        SET indexA = FLOOR(RAND() * 52) + 1;
+        SET indexB = FLOOR(RAND() * 52) + 1;
+
+        SELECT Face, Suit INTO faceA, suitA
+        FROM CARD
+        WHERE Id = indexA;
+
+        SELECT Face, Suit INTO faceB, suitB
+        FROM CARD
+        WHERE Id = indexB;
+        
+        SET numShuffles = numShuffles + 1;
+
+    END WHILE;
+
+END $$
+
 DELIMITER ;
