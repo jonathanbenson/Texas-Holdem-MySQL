@@ -676,6 +676,83 @@ describe("database procedure tests", () => {
 
 	});
 
+
+	test("SHUFFLE_DECK stored procedure", () => {
+		/*
+
+		Setup test:
+
+		Create a new table which initializes an un-shuffled deck of cards.
+		Shuffle the newly created deck of cards.
+
+		*/
+
+		return query(`
+
+			CALL NEW_TABLE (25);
+
+			CALL SHUFFLE_DECK (1);
+
+			SELECT Face AS face, Suit AS suit
+			FROM DECK_CARD
+			WHERE TableId = 1
+			ORDER BY CONCAT(Face, '-', Suit);
+
+			SELECT _Index AS i
+			FROM DECK_CARD
+			WHERE TableId = 1;
+
+		`).then(result => {
+			/*
+
+			Upon shuffling a deck of cards, the indices of the deck cards should
+			be randomly swapped with each other 104 times.
+
+			To test this we expect that the following conditions are met:
+			1. The shuffled indices contain indices 1-52, no repeats.
+			2. The shuffles indices are not sorted (due to extremely low probability).
+
+			*/
+
+			let expectedSortedIndices = [
+				 { i: 1 },   { i: 2 },
+				 { i: 3 },   { i: 4 },
+				 { i: 5 },   { i: 6 },
+				 { i: 7 },   { i: 8 },
+				 { i: 9 },   { i: 10 },
+				 { i: 11 },  { i: 12 },
+				 { i: 13 },  { i: 14 },
+				 { i: 15 },  { i: 16 },
+				 { i: 17 },  { i: 18 },
+				 { i: 19 },  { i: 20 },
+				 { i: 21 },  { i: 22 },
+				 { i: 23 },  { i: 24 },
+				 { i: 25 },  { i: 26 },
+				 { i: 27 },  { i: 28 },
+				 { i: 29 },  { i: 30 },
+				 { i: 31 },  { i: 32 },
+				 { i: 33 },  { i: 34 },
+				 { i: 35 },  { i: 36 },
+				 { i: 37 },  { i: 38 },
+				 { i: 39 },  { i: 40 },
+				 { i: 41 },  { i: 42 },
+				 { i: 43 },  { i: 44 },
+				 { i: 45 },  { i: 46 },
+				 { i: 47 },  { i: 48 },
+				 { i: 49 },  { i: 50 },
+				 { i: 51 },  { i: 52 }
+			  ];
+
+			let indices = JSON.parse(JSON.stringify(result[3]));
+			let sortedIndices = result[3].sort((a, b) => a.i - b.i);
+
+			expect(indices).not.toEqual(sortedIndices);
+			expect(sortedIndices).toEqual(expectedSortedIndices);
+
+		});
+
+	});
+
 });
 
 
