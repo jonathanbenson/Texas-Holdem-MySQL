@@ -40,7 +40,7 @@ END $$
 
 DROP PROCEDURE IF EXISTS JOIN_TABLE $$
 
-
+/* could add a pick table option, if you would like to play with people you know */
 CREATE PROCEDURE JOIN_TABLE (In playerName varchar(255), In pokerTable INT, OUT msg Varchar(100))
 BEGIN
     /*
@@ -137,7 +137,7 @@ END $$
 
 DROP PROCEDURE IF EXISTS LEAVE_TABLE $$
 
-
+/* could test to see if leaving table makes sure player forfeits chips betted for the current turn if turn is not over */
 CREATE PROCEDURE LEAVE_TABLE (In playerName varchar(255), out msg varchar(100))
 BEGIN
 
