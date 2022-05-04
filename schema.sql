@@ -84,11 +84,6 @@ CREATE TABLE PLAY (
     LastPlayId			INTEGER,
     PlayType			VARCHAR(255) NOT NULL,
     ChipsNo				INTEGER NOT NULL CHECK(ChipsNo >= 0),
-
-    -- When it is a new players turn, a new play is inserted automatically
-    -- A countdown then begins for the player to select their play
-    -- ... and if the timer hits zero without a play, the user automatically folds
-    TMinus              INTEGER NOT NULL CHECK(TMinus > 0),
     
     -- No foreign key constraint for LastPlayId because it can be NULL (first play of the round)
     FOREIGN KEY (PlayerUsername) REFERENCES _USER(Username),
